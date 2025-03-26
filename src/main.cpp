@@ -1,26 +1,28 @@
 #include <iostream>
+#include <net_ln3/cpp_lib/ArgumentParser.h>
+#include <net_ln3/cpp_lib/multi_platform_util.h>
 
-// TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
-// click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
-int main()
+int main(const int argc_, char* argv_[])
 {
-    // TIP Press <shortcut actionId="RenameElement"/> when your caret is at the
-    // <b>lang</b> variable name to see how CLion can help you rename it.
-    auto lang = "C++";
-    std::cout << "Hello and welcome to " << lang << "!\n";
-
-    for (int i = 1; i <= 5; i++) {
-        // TIP Press <shortcut actionId="Debug"/> to start debugging your code.
-        // We have set one <icon src="AllIcons.Debugger.Db_set_breakpoint"/>
-        // breakpoint for you, but you can always add more by pressing
-        // <shortcut actionId="ToggleLineBreakpoint"/>.
-        std::cout << "i = " << i << std::endl;
+    net_ln3::cpp_lib::multi_platform::CodePageGuard cp;
+    using ap = net_ln3::cpp_lib::ArgumentParser;
+    ap argument_parser{
+        ap::OptionNames({
+            {"output-dir", ap::OptionType::STRING},
+            {"input-dir", ap::OptionType::STRING},
+            {"help", ap::OptionType::BOOLEAN}
+        })
+    };
+    argument_parser.parse(argc_, argv_);
+    if (argument_parser.getOption("help")) {
+        std::cout << "file-bundler\n"
+                     "\t--output-dir:\n"
+                     "\t\t出力先ディレクトリを指定します。\n"
+                     "\t\t指定したディレクトリには、resources.h及びresources.cが生成されます。\n"
+                     "\t--input-dir:\n"
+                     "\t\t入力ディレクトリを指定します。\n"
+                     "\t\t指定したディレクトリに存在するファイルが全てバンドルされます。\n"
+                     "\t\toutput-dirと同じディレクトリは指定できません。" << std::endl;
     }
-
     return 0;
 }
-
-// TIP See CLion help at <a
-// href="https://www.jetbrains.com/help/clion/">jetbrains.com/help/clion/</a>.
-//  Also, you can try interactive lessons for CLion by selecting
-//  'Help | Learn IDE Features' from the main menu.
