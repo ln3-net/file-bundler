@@ -24,7 +24,7 @@ void printHelp()
         "\t生成された定数はF_{FILE_NAME}_{EXTENSION}の形で命名されます。\n"
         "\tただし、半角英数字およびアンダーバー以外の文字は取り除かれます。\n"
         "\t半角スペースについては、アンダーバーに置換されます。\n"
-        "\tまた、配列のサイズの定数はSIZE_{FILE_NAME}_{EXTENSION}の形で命名されます。\n"
+        "\t配列のサイズの定数はSIZE_{FILE_NAME}_{EXTENSION}の形で命名されます。\n"
         "\tここで生成される定数名が競合する場合は、警告とともに無視されます。\n"
         "\tこのソフトウェアは、C言語標準機能となるembedディレクティブまでの繋ぎです。\n"
         "\n\t--output-dir" << ph::Color("*(必須)", ERROR_COLOR) << ":\n"
