@@ -16,7 +16,7 @@ class FileBundler
 public:
     FileBundler(std::string input_dir_, std::string output_dir_, std::string filelist_path_, bool header_only_, bool declare_only_);
 
-    [[nodiscard]] int bundle() const;
+    [[nodiscard]] int bundle(bool all_yes_) const;
 
     FileBundler() = delete;
     FileBundler(const FileBundler&) = delete;

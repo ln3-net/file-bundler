@@ -27,10 +27,10 @@ void printHelp()
         "\t配列のサイズの定数はSIZE_{FILE_NAME}_{EXTENSION}の形で命名されます。\n"
         "\tここで生成される定数名が競合する場合は、警告とともに無視されます。\n"
         "\tこのソフトウェアは、C言語標準機能となるembedディレクティブまでの繋ぎです。\n"
-        "\n\t--output-dir" << ph::Color("*(必須)", ERROR_COLOR) << ":\n"
+        "\n\t--output-dir, -o" << ph::Color("*(必須)", ERROR_COLOR) << ":\n"
         "\t\t出力先ディレクトリを指定します。\n"
         "\t\t指定したディレクトリには、resources.h及びresources.cが生成されます。\n"
-        "\n\t--input-dir" << ph::Color("*(1つ必須, 併用可能)", "#00a381") << ":\n"
+        "\n\t--input-dir, -i" << ph::Color("*(1つ必須, 併用可能)", "#00a381") << ":\n"
         "\t\t入力ディレクトリを指定します。\n"
         "\t\t指定したディレクトリに存在するファイルが全てバンドルされます。\n"
         "\t\t== 制約 ==\n"
@@ -38,32 +38,34 @@ void printHelp()
         "\t\t・output-dirと同じディレクトリは指定できません。\n"
         "\t\t・target-filelist引数により指定されているファイルと\n"
         "\t\t\t同一の名称(拡張子を含む)を持つファイルについては処理されません。\n"
-        "\n\t--target-filelist" << ph::Color("*(1つ必須, 併用可能)", "#00a381") << ":\n"
+        "\n\t--target-filelist, -t" << ph::Color("*(1つ必須, 併用可能)", "#00a381") << ":\n"
         "\t\tファイルリストを使用します。\n"
         "\t\tこの引数により指定するファイルリストファイルには１行につき１ファイルのパスを記述します。\n"
         "\t\tこの引数は、input-dirの代わりに指定することができ、両方を指定した場合はそれぞれをバンドルします。\n"
         "\n\t--header-only:\n"
         "\t\tヘッダファイルに直接バンドルします。\n"
-        "\n\t--declare-only\n"
+        "\n\t--declare-only:\n"
         "\t\t定数宣言のみのヘッダファイルを生成します。\n"
-        "\t\theader-onlyと同時に指定された場合は、header-onlyが優先されます。\n"
-        "\n\t--help:\n"
+        "\t\t""header-onlyと同時に指定された場合は、header-onlyが優先されます。\n"
+        "\n\t--help, -?:\n"
         "\t\tヘルプテキストを表示します。\n"
-        "\n\t--version:\n"
+        "\n\t--version, -v:\n"
         "\t\tバージョン情報を表示します。\n"
         "\n\t--show-license:\n"
-        "\t\tライセンス情報を表示します。" << std::endl;
+        "\t\tライセンス情報を表示します。"
+        "\n\t--yes, -y:\n"
+        "\t\t上書き保存などをスキップしyesを渡します。" << std::endl;
 }
 
 void printVersion()
 {
-    std::cout << std::format("{} {}\n{}\n--- APP INFO ---\napp_id: {}\nlicense: {}",
+    std::cout << std::format("{} {}\n{}\n--- APP INFO ---\n""app_id: {}\n""license: {}",
                              app_name, version, copyright, app_id, license);
 }
 
 void printLicense()
 {
-    std::string license_body(F_LICENSE_, SIZE_LICENSE_);
+    const std::string license_body(F_LICENSE_, SIZE_LICENSE_);
     std::cout << license_body << std::endl;
 }
 
@@ -82,12 +84,15 @@ int main(const int argc_, char* argv_[])
             {"help", ap::OptionType::BOOLEAN},
             {"version", ap::OptionType::BOOLEAN},
             {"show-license", ap::OptionType::BOOLEAN},
+            {"yes", ap::OptionType::BOOLEAN}
         }),
         ap::OptionAlias({
             {"?", "help"},
             {"v", "version"},
             {"i", "input-dir"},
-            {"o", "output-dir"}
+            {"o", "output-dir"},
+            {"t", "target-filelist"},
+            {"y", "yes"}
         })
     };
     argument_parser.parse(argc_, argv_);
@@ -163,7 +168,7 @@ int main(const int argc_, char* argv_[])
             argument_parser.getOption("header-only").getBoolean(),
             argument_parser.getOption("declare-only").getBoolean()
         };
-        return bundler.bundle();
+        return bundler.bundle(argument_parser.getOption("yes").getBoolean());
     }
     return 0;
 }

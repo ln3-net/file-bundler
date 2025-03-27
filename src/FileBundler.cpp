@@ -25,8 +25,10 @@ const std::regex line_separator_pattern(R"((\r\n?)|\n)");
 namespace fs = std::filesystem;
 using ph = net_ln3::cpp_lib::PrintHelper;
 
-bool confirmPrompt(const std::string& message_, const std::string& yes_message_, const std::string& no_message_)
+bool confirmPrompt(const std::string& message_, const std::string& yes_message_, const std::string& no_message_, bool yes_)
 {
+    if (yes_)
+        return true;
     while (true) {
         std::cout << message_ << std::flush;
         std::string user_input;
@@ -65,7 +67,7 @@ FileBundler::FileBundler(std::string input_dir_, std::string output_dir_, std::s
 {
 }
 
-int FileBundler::bundle() const
+int FileBundler::bundle(bool all_yes_) const
 {
     // バンドル対象ファイルの指定モード
     int bundle_target_mode = 0;
@@ -143,7 +145,7 @@ int FileBundler::bundle() const
         if (is_regular_file(header_path)) {
             if (!confirmPrompt("resource.hは既に存在しています。上書きしますか？(Y/N)",
                                "ファイルを上書きします。",
-                               "コマンドをキャンセルしました。"))
+                               "コマンドをキャンセルしました。", all_yes_))
                 return 0;
         }
         else {
@@ -155,7 +157,7 @@ int FileBundler::bundle() const
         if (is_regular_file(header_path)) {
             if (!confirmPrompt("resource.cは既に存在しています。上書きしますか？(Y/N)",
                                "ファイルを上書きします。",
-                               "コマンドをキャンセルしました。"))
+                               "コマンドをキャンセルしました。", all_yes_))
                 return 0;
         }
         else {
@@ -195,8 +197,7 @@ int FileBundler::bundle() const
         // ヘッダファイルの書き込み
         //
 
-        header
-            << std::format("// {}\n", path.filename().generic_string());
+        header << std::format("// {}\n", path.filename().generic_string());
         if (!_header_only) {
             header
                 << std::format("extern const unsigned long long SIZE_{};\n", filename)
