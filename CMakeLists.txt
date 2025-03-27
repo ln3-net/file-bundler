@@ -3,7 +3,14 @@ project(file_bundler)
 
 set(CMAKE_CXX_STANDARD 20)
 
-add_executable(file_bundler src/main.cpp)
+add_executable(file_bundler src/main.cpp
+        src/FileBundler.cpp
+        src/FileBundler.h
+        src/resource.h
+        src/resource.c
+        src/constants.cpp
+        src/constants.h
+)
 
 if (${MSVC})
     target_compile_options(file_bundler PRIVATE "/utf-8")
