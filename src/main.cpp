@@ -3,6 +3,7 @@
 #include <net_ln3/cpp_lib/multi_platform_util.h>
 #include <net_ln3/cpp_lib/PrintHelper.h>
 #include <filesystem>
+#include <format>
 
 #include "constants.h"
 #include "FileBundler.h"
@@ -42,11 +43,6 @@ void printHelp()
         "\t\tファイルリストを使用します。\n"
         "\t\tこの引数により指定するファイルリストファイルには１行につき１ファイルのパスを記述します。\n"
         "\t\tこの引数は、input-dirの代わりに指定することができ、両方を指定した場合はそれぞれをバンドルします。\n"
-        "\n\t--header-only:\n"
-        "\t\tヘッダファイルに直接バンドルします。\n"
-        "\n\t--declare-only:\n"
-        "\t\t定数宣言のみのヘッダファイルを生成します。\n"
-        "\t\t""header-onlyと同時に指定された場合は、header-onlyが優先されます。\n"
         "\n\t--help, -?:\n"
         "\t\tヘルプテキストを表示します。\n"
         "\n\t--version, -v:\n"
@@ -79,8 +75,6 @@ int main(const int argc_, char* argv_[])
             {"output-dir", ap::OptionType::STRING},
             {"input-dir", ap::OptionType::STRING},
             {"target-filelist", ap::OptionType::STRING},
-            {"header-only", ap::OptionType::BOOLEAN},
-            {"declare-only", ap::OptionType::BOOLEAN},
             {"help", ap::OptionType::BOOLEAN},
             {"version", ap::OptionType::BOOLEAN},
             {"show-license", ap::OptionType::BOOLEAN},
@@ -156,17 +150,12 @@ int main(const int argc_, char* argv_[])
             std::cout << "\n詳細な用法はヘルプを参照してください。 file-bundler --help" << std::endl;
             return 1;
         }
-        if (argument_parser.getOption("declare-only") && argument_parser.getOption("header-only")) {
-            std::cout << ph::Color("警告", WARN_COLOR) <<
-                ": 競合するフラグ「header-only」「declare-only」の両方が有効になっています。\n"
-                "\t「declare-only」フラグを無視します。" << std::endl;
-        }
         const FileBundler bundler{
             argument_parser.getOption("input-dir").getString(),
             argument_parser.getOption("output-dir").getString(),
             argument_parser.getOption("target-filelist").getString(),
-            argument_parser.getOption("header-only").getBoolean(),
-            argument_parser.getOption("declare-only").getBoolean()
+            true,
+            false
         };
         return bundler.bundle(argument_parser.getOption("yes").getBoolean());
     }

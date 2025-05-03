@@ -8,11 +8,15 @@
 
 #include "FileBundler.h"
 
+#include <algorithm>
 #include <filesystem>
+#include <format>
 #include <fstream>
 #include <iostream>
+#include <iterator>
 #include <regex>
 #include <set>
+#include <unordered_map>
 
 #include <net_ln3/cpp_lib/PrintHelper.h>
 
@@ -47,8 +51,8 @@ bool confirmPrompt(const std::string& message_, const std::string& yes_message_,
 
 std::string convertFilePathToConstantName(const fs::path& file_path)
 {
-    std::string filename = file_path.stem();
-    std::string extension = file_path.extension();
+    std::string filename = file_path.stem().generic_string();
+    std::string extension = file_path.extension().generic_string();
     std::string result = std::format("{}_{}", filename, extension);
     std::ranges::transform(result, result.begin(), toupper);
     result = std::regex_replace(result, space_replace_pattern, "_");
