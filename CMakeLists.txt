@@ -7,7 +7,6 @@ add_executable(file_bundler src/main.cpp
         src/FileBundler.cpp
         src/FileBundler.h
         src/resource.h
-        src/resource.c
         src/constants.cpp
         src/constants.h
 )
