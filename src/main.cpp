@@ -30,7 +30,7 @@ void printHelp()
         "\tこのソフトウェアは、C言語標準機能となるembedディレクティブまでの繋ぎです。\n"
         "\n\t--output-dir, -o" << ph::Color("*(必須)", ERROR_COLOR) << ":\n"
         "\t\t出力先ディレクトリを指定します。\n"
-        "\t\t指定したディレクトリには、resources.h及びresources.cが生成されます。\n"
+        "\t\t指定したディレクトリには、resources.hが生成されます。\n"
         "\n\t--input-dir, -i" << ph::Color("*(1つ必須, 併用可能)", "#00a381") << ":\n"
         "\t\t入力ディレクトリを指定します。\n"
         "\t\t指定したディレクトリに存在するファイルが全てバンドルされます。\n"
