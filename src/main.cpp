@@ -50,7 +50,12 @@ void printHelp()
         "\n\t--show-license:\n"
         "\t\tライセンス情報を表示します。"
         "\n\t--yes, -y:\n"
-        "\t\t上書き保存などをスキップしyesを渡します。" << std::endl;
+        "\t\t上書き保存などをスキップしyesを渡します。"
+        "\n\t--truncate-block-comment\n"
+        "\t\tブロックコメントを成果物に含めないようにします。\n"
+        "\t\tブロックコメントは、/*から始まり*/までの文字列のことです。例(/*ここがコメント*/)\n"
+        "\t\t制約"
+        "\t\t- コメントの入れ子は処理できません。" << std::endl;
 }
 
 void printVersion()
@@ -78,7 +83,8 @@ int main(const int argc_, char* argv_[])
             {"help", ap::OptionType::BOOLEAN},
             {"version", ap::OptionType::BOOLEAN},
             {"show-license", ap::OptionType::BOOLEAN},
-            {"yes", ap::OptionType::BOOLEAN}
+            {"yes", ap::OptionType::BOOLEAN},
+            {"truncate-block-comment", ap::OptionType::BOOLEAN}
         }),
         ap::OptionAlias({
             {"?", "help"},
@@ -150,14 +156,16 @@ int main(const int argc_, char* argv_[])
             std::cout << "\n詳細な用法はヘルプを参照してください。 file-bundler --help" << std::endl;
             return 1;
         }
+        int option = 1;
+        option |= argument_parser.getOption("yes")?FileBundler::Options::ALL_YES : 0;
+
         const FileBundler bundler{
             argument_parser.getOption("input-dir").getString(),
             argument_parser.getOption("output-dir").getString(),
             argument_parser.getOption("target-filelist").getString(),
-            true,
-            false
+            option
         };
-        return bundler.bundle(argument_parser.getOption("yes").getBoolean());
+        return bundler.bundle();
     }
     return 0;
 }

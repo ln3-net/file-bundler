@@ -15,7 +15,6 @@
 #include <iostream>
 #include <iterator>
 #include <regex>
-#include <set>
 #include <unordered_map>
 
 #include <net_ln3/cpp_lib/PrintHelper.h>
@@ -29,7 +28,8 @@ const std::regex line_separator_pattern(R"((\r\n?)|\n)");
 namespace fs = std::filesystem;
 using ph = net_ln3::cpp_lib::PrintHelper;
 
-bool confirmPrompt(const std::string& message_, const std::string& yes_message_, const std::string& no_message_, bool yes_)
+bool confirmPrompt(const std::string& message_, const std::string& yes_message_, const std::string& no_message_,
+                   const bool yes_)
 {
     if (yes_)
         return true;
@@ -63,15 +63,15 @@ std::string convertFilePathToConstantName(const fs::path& file_path)
 std::string stripLn(const std::string& str) { return std::regex_replace(str, line_separator_pattern, ""); }
 
 FileBundler::FileBundler(std::string input_dir_, std::string output_dir_, std::string filelist_path_,
-                         const bool header_only_,
-                         const bool declare_only_)
+                         const int option_)
     : _input_dir(std::move(input_dir_)), _output_dir(std::move(output_dir_)),
-      _filelist_path(std::move(filelist_path_)),
-      _header_only(header_only_), _declare_only(declare_only_)
+      _filelist_path(std::move(filelist_path_)), _header_only(option_ & Options::HEADER_ONLY),
+      _declare_only(option_ & Options::DECLARE_ONLY),
+      _all_yes(option_ & Options::ALL_YES)
 {
 }
 
-int FileBundler::bundle(bool all_yes_) const
+int FileBundler::bundle() const
 {
     // バンドル対象ファイルの指定モード
     int bundle_target_mode = 0;
@@ -97,8 +97,7 @@ int FileBundler::bundle(bool all_yes_) const
     // ファイルから登録
     std::unordered_map<std::string, fs::path> files;
     if (bundle_target_mode & 0b01) {
-        std::ifstream ifs(_filelist_path);
-        if (ifs) {
+        if (std::ifstream ifs(_filelist_path); ifs) {
             while (!ifs.eof()) {
                 std::string line;
                 std::getline(ifs, line);
@@ -149,7 +148,7 @@ int FileBundler::bundle(bool all_yes_) const
         if (is_regular_file(header_path)) {
             if (!confirmPrompt("resource.hは既に存在しています。上書きしますか？(Y/N)",
                                "ファイルを上書きします。",
-                               "コマンドをキャンセルしました。", all_yes_))
+                               "コマンドをキャンセルしました。", _all_yes))
                 return 0;
         }
         else {
@@ -161,7 +160,7 @@ int FileBundler::bundle(bool all_yes_) const
         if (is_regular_file(header_path)) {
             if (!confirmPrompt("resource.cは既に存在しています。上書きしますか？(Y/N)",
                                "ファイルを上書きします。",
-                               "コマンドをキャンセルしました。", all_yes_))
+                               "コマンドをキャンセルしました。", _all_yes))
                 return 0;
         }
         else {

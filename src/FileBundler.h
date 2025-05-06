@@ -11,24 +11,33 @@
 #include <string>
 
 
-class FileBundler
-{
+class FileBundler {
 public:
-    FileBundler(std::string input_dir_, std::string output_dir_, std::string filelist_path_, bool header_only_, bool declare_only_);
+    struct Options {
+        enum Option {
+            HEADER_ONLY = 0x0001,
+            DECLARE_ONLY = 0x0010,
+            ALL_YES = 0x0100
+        };
+    };
 
-    [[nodiscard]] int bundle(bool all_yes_) const;
+    FileBundler(std::string input_dir_, std::string output_dir_, std::string filelist_path_, int option_);
+
+    [[nodiscard]] int bundle() const;
 
     FileBundler() = delete;
     FileBundler(const FileBundler&) = delete;
     FileBundler(FileBundler&&) = delete;
     FileBundler& operator=(const FileBundler&) = delete;
     FileBundler& operator=(FileBundler&&) = delete;
+
 private:
     std::string _input_dir;
     std::string _output_dir;
     std::string _filelist_path;
     bool _header_only;
     bool _declare_only;
+    bool _all_yes;
 };
 
 
